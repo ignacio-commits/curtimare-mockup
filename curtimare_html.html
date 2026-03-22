@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curtimare Swimwear</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Georgia, serif; }
+    :root {
+      --cream: #F5EFE6;
+      --burgundy: #6B2737;
+      --chocolate: #3D1F1F;
+      --dark: #1A1A1A;
+      --mid: #7A6A60;
+      --light: #EDE8E0;
+      --white: #FDFAF6;
+    }
+    html { scroll-behavior: smooth; }
+    .topbar { background: var(--dark); color: var(--cream); text-align: center; padding: 9px; font-size: 12px; letter-spacing: 1.5px; font-family: sans-serif; text-transform: uppercase; }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; background: var(--white); border-bottom: 0.5px solid #ddd; position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-size: 20px; font-weight: 400; letter-spacing: 3px; text-transform: uppercase; color: var(--dark); }
+    .nav-links { display: flex; gap: 28px; font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase; font-family: sans-serif; color: var(--dark); }
+    .nav-links span { cursor: pointer; }
+    .nav-links span:hover, .nav-links span.current { border-bottom: 1px solid var(--dark); }
+    .nav-icons { display: flex; gap: 20px; font-size: 13px; font-family: sans-serif; color: var(--dark); cursor: pointer; }
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* HERO */
+    .hero { display: grid; grid-template-columns: 1fr 1fr; min-height: 420px; max-height: 480px; overflow: hidden; }
+    .hero-left { background: var(--chocolate); display: flex; flex-direction: column; justify-content: center; padding: 52px; }
+    .hero-tag { font-family: sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #C4A882; margin-bottom: 14px; }
+    .hero-title { font-size: clamp(28px, 3.5vw, 46px); font-weight: 400; color: var(--cream); line-height: 1.15; margin-bottom: 16px; }
+    .hero-title em { font-style: italic; color: #C4A882; }
+    .hero-sub { font-family: sans-serif; font-size: 13px; color: #B89A80; margin-bottom: 28px; line-height: 1.7; }
+    .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .btn-primary { display: inline-block; background: var(--cream); color: var(--dark); font-family: sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 13px 28px; cursor: pointer; border: none; }
+    .btn-primary:hover { background: #C4A882; }
+    .btn-outline { display: inline-block; border: 1px solid var(--cream); color: var(--cream); font-family: sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; padding: 13px 28px; cursor: pointer; background: transparent; }
+    .hero-right { background: #4A2525; display: flex; align-items: center; justify-content: center; }
+    .hero-right img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
+    .ph-box { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .ph-circle { border-radius: 50%; border: 1px solid #8A5A5A; }
+    .ph-box p { font-family: sans-serif; font-size: 11px; color: #8A5A5A; letter-spacing: 1px; text-transform: uppercase; text-align: center; }
+
+    /* STRIP */
+    .strip { background: var(--burgundy); display: flex; justify-content: center; gap: 48px; padding: 13px 40px; flex-wrap: wrap; }
+    .strip-item { font-family: sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--cream); display: flex; align-items: center; gap: 7px; }
+    .strip-dot { width: 4px; height: 4px; background: #C4A882; border-radius: 50%; flex-shrink: 0; }
+
+    /* SECTIONS */
+    .section { padding: 64px 52px; }
+    .section-header { text-align: center; margin-bottom: 44px; }
+    .section-tag { font-family: sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--mid); margin-bottom: 10px; }
+    .section-title { font-size: 30px; font-weight: 400; color: var(--dark); }
+    .section-title em { font-style: italic; color: var(--burgundy); }
+
+    /* PRODUCTS */
+    .products-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 20px; }
+    .product-card { cursor: pointer; }
+    .product-img { background: var(--light); aspect-ratio: 3/4; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; overflow: hidden; }
+    .product-img img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+    .product-overlay { position: absolute; inset: 0; background: rgba(61,31,31,0.55); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s; }
+    .product-img:hover .product-overlay { opacity: 1; }
+    .product-overlay span { font-family: sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--cream); border: 1px solid var(--cream); padding: 9px 18px; }
+    .img-label { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+    .img-label p { font-family: sans-serif; font-size: 10px; color: #A09080; letter-spacing: 1px; text-transform: uppercase; text-align: center; }
+    .product-color { display: flex; gap: 6px; margin-bottom: 7px; }
+    .color-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .product-name { font-size: 14px; color: var(--dark); margin-bottom: 3px; }
+    .product-price { font-family: sans-serif; font-size: 13px; color: var(--mid); }
+
+    /* COLLECTIONS GRID */
+    .coll-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 2px; }
+    .coll-item { position: relative; cursor: pointer; overflow: hidden; }
+    .coll-item.tall { grid-row: span 2; min-height: 480px; }
+    .coll-bg { width: 100%; min-height: 240px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s; }
+    .coll-item.tall .coll-bg { height: 100%; }
+    .coll-item:hover .coll-bg { transform: scale(1.03); }
+    .coll-label { position: absolute; bottom: 18px; left: 18px; z-index: 2; }
+    .coll-label h3 { font-size: 16px; font-weight: 400; color: var(--white); letter-spacing: 1px; }
+    .coll-label span { font-family: sans-serif; font-size: 10px; color: #C4A882; letter-spacing: 2px; text-transform: uppercase; }
+
+    /* ABOUT */
+    .about-section { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; padding: 64px 52px; background: var(--cream); }
+    .about-img { aspect-ratio: 4/5; overflow: hidden; background: #DDD0C4; position: relative; display: flex; align-items: center; justify-content: center; }
+    .about-img img { width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+    .about-tag { font-family: sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--mid); margin-bottom: 18px; }
+    .about-title { font-size: 32px; font-weight: 400; color: var(--dark); line-height: 1.2; margin-bottom: 18px; }
+    .about-title em { font-style: italic; color: var(--burgundy); }
+    .about-text { font-family: sans-serif; font-size: 14px; color: var(--mid); line-height: 1.9; margin-bottom: 24px; }
+
+    /* TESTIMONIALS */
+    .testi-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 24px; }
+    .testi-card { background: var(--cream); padding: 28px 24px; }
+    .stars { color: var(--burgundy); font-size: 14px; margin-bottom: 12px; }
+    .testi-text { font-size: 14px; color: var(--dark); line-height: 1.8; margin-bottom: 18px; font-style: italic; }
+    .testi-author { font-family: sans-serif; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--mid); }
+
+    /* NEWSLETTER */
+    .newsletter { background: var(--dark); padding: 64px 52px; text-align: center; }
+    .newsletter h2 { font-size: 28px; font-weight: 400; color: var(--cream); margin-bottom: 10px; }
+    .newsletter p { font-family: sans-serif; font-size: 14px; color: #8A7A70; margin-bottom: 28px; }
+    .nl-form { display: flex; justify-content: center; max-width: 400px; margin: 0 auto; }
+    .nl-input { flex: 1; padding: 13px 18px; background: #2A2020; border: 1px solid #4A3A3A; color: var(--cream); font-family: sans-serif; font-size: 13px; outline: none; }
+    .nl-input::placeholder { color: #6A5A5A; }
+    .nl-btn { padding: 13px 22px; background: var(--burgundy); color: var(--cream); border: none; font-family: sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; }
+
+    /* FOOTER */
+    footer { background: var(--chocolate); padding: 44px 52px 24px; }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 36px; margin-bottom: 36px; }
+    .footer-brand p { font-family: sans-serif; font-size: 13px; color: #8A7060; line-height: 1.8; margin-top: 12px; }
+    .footer-col h4 { font-family: sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: #C4A882; margin-bottom: 14px; }
+    .footer-col a { display: block; font-family: sans-serif; font-size: 13px; color: #8A7060; margin-bottom: 7px; text-decoration: none; cursor: pointer; }
+    .footer-col a:hover { color: var(--cream); }
+    .footer-bottom { border-top: 0.5px solid #4A3030; padding-top: 18px; display: flex; justify-content: space-between; }
+    .footer-bottom p { font-family: sans-serif; font-size: 12px; color: #6A5050; }
+
+    /* PRODUCTO */
+    .product-page { padding: 40px 52px; }
+    .breadcrumb { font-family: sans-serif; font-size: 12px; color: var(--mid); margin-bottom: 28px; }
+    .breadcrumb span { cursor: pointer; }
+    .breadcrumb span:hover { color: var(--burgundy); }
+    .prod-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 52px; }
+    .prod-imgs { display: grid; grid-template-columns: 72px 1fr; gap: 10px; }
+    .prod-thumbs { display: flex; flex-direction: column; gap: 8px; }
+    .prod-thumb { background: var(--light); aspect-ratio: 1; cursor: pointer; border: 1px solid transparent; overflow: hidden; }
+    .prod-thumb.active { border-color: var(--dark); }
+    .prod-main-img { background: var(--light); aspect-ratio: 3/4; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+    .prod-info h1 { font-size: 26px; font-weight: 400; margin-bottom: 7px; }
+    .prod-price { font-family: sans-serif; font-size: 19px; color: var(--dark); margin-bottom: 22px; }
+    .prod-section-title { font-family: sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--mid); margin-bottom: 10px; }
+    .color-options { display: flex; gap: 10px; margin-bottom: 20px; }
+    .color-opt { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+    .color-opt.selected { border-color: var(--dark); }
+    .size-options { display: flex; gap: 7px; margin-bottom: 24px; flex-wrap: wrap; }
+    .size-opt { width: 42px; height: 42px; border: 1px solid #C8BFB5; font-family: sans-serif; font-size: 13px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .size-opt:hover, .size-opt.selected { background: var(--dark); color: var(--white); border-color: var(--dark); }
+    .btn-add { width: 100%; padding: 15px; background: var(--dark); color: var(--cream); font-family: sans-serif; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; border: none; cursor: pointer; margin-bottom: 10px; }
+    .btn-wish { width: 100%; padding: 15px; background: transparent; color: var(--dark); font-family: sans-serif; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; border: 1px solid var(--dark); cursor: pointer; margin-bottom: 24px; }
+    .prod-detail { border-top: 0.5px solid #ddd; padding-top: 18px; font-family: sans-serif; font-size: 13px; color: var(--mid); line-height: 1.9; }
+
+    /* COLECCIONES PAGE */
+    .coll-page { padding: 44px 52px; }
+    .coll-page-header { text-align: center; margin-bottom: 40px; }
+    .filter-bar { display: flex; gap: 10px; margin-bottom: 32px; flex-wrap: wrap; }
+    .filter-btn { font-family: sans-serif; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; padding: 9px 18px; border: 1px solid #C8BFB5; background: transparent; cursor: pointer; color: var(--dark); }
+    .filter-btn.active { background: var(--dark); color: var(--cream); border-color: var(--dark); }
+    .coll-products-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 24px; }
+
+    /* VALORES */
+    .valores-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 28px; }
+    .valor-item { text-align: center; padding: 28px 18px; }
+    .valor-circle { width: 44px; height: 44px; background: var(--cream); border-radius: 50%; margin: 0 auto 14px; border: 1px solid #C4A882; }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; max-height: none; }
+      .hero-right { min-height: 300px; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .coll-grid { grid-template-columns: 1fr; }
+      .coll-item.tall { grid-row: span 1; }
+      .about-section { grid-template-columns: 1fr; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .prod-layout { grid-template-columns: 1fr; }
+      nav { padding: 14px 20px; }
+      .nav-links { gap: 16px; }
+      .section { padding: 48px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">Despachos a todo Chile · 30 días para cambios · Tallas XS – XL</div>
+
+  <nav>
+    <div class="nav-logo">Curtimare</div>
+    <div class="nav-links">
+      <span onclick="showPage('home')" id="nav-home" class="current">Inicio</span>
+      <span onclick="showPage('colecciones')" id="nav-colecciones">Colecciones</span>
+      <span onclick="showPage('producto')" id="nav-producto">Bikinis</span>
+      <span onclick="showPage('nosotros')" id="nav-nosotros">Nosotros</span>
+    </div>
+    <div class="nav-icons">
+      <span>Buscar</span>
+      <span>Cuenta</span>
+      <span>Bolsa (0)</span>
+    </div>
+  </nav>
+
+  <!-- ===== HOME ===== -->
+  <div class="page active" id="page-home">
+
+    <div class="hero">
+      <div class="hero-left">
+        <p class="hero-tag">Nueva colección — Verano 2026</p>
+        <h1 class="hero-title">Hecha para<br>el <em>mar</em> y<br>para ti.</h1>
+        <p class="hero-sub">Trajes de baño diseñados para mujeres que viven el verano con intensidad. Telas de calidad, cortes que abrazan.</p>
+        <div class="hero-btns">
+          <button class="btn-primary" onclick="showPage('colecciones')">Ver colección</button>
+          <button class="btn-outline" onclick="showPage('nosotros')">Nuestra historia</button>
+        </div>
+      </div>
+      <div class="hero-right">
+        <!-- REEMPLAZA src con tu foto: <img src="fotos/hero.jpg" alt="Curtimare"> -->
+        <div class="ph-box">
+          <div class="ph-circle" style="width:48px;height:48px;"></div>
+          <p>Foto principal de campaña</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="strip">
+      <div class="strip-item"><div class="strip-dot"></div>Envío gratis sobre $50.000</div>
+      <div class="strip-item"><div class="strip-dot"></div>30 días para cambios</div>
+      <div class="strip-item"><div class="strip-dot"></div>Tallas XS – XL</div>
+      <div class="strip-item"><div class="strip-dot"></div>Hecho en Chile</div>
+    </div>
+
+    <div class="section" style="background:var(--white);">
+      <div class="section-header">
+        <p class="section-tag">Los más amados</p>
+        <h2 class="section-title">Favoritos de <em>la temporada</em></h2>
+      </div>
+      <div class="products-grid">
+        <div class="product-card" onclick="showPage('producto')">
+          <div class="product-img">
+            <div class="product-overlay"><span>Ver producto</span></div>
+            <!-- <img src="fotos/coco-burdeo.jpg" alt="Bikini Coco Burdeo"> -->
+            <div class="img-label"><div class="ph-circle" style="width:36px;height:36px;background:#6B2737;border:none;"></div><p>Bikini Coco<br>Burdeo</p></div>
+          </div>
+          <div class="product-color">
+            <div class="color-dot" style="background:#6B2737;border:1px solid #ddd;"></div>
+            <div class="color-dot" style="background:#3D1F1F;border:1px solid #ddd;"></div>
+            <div class="color-dot" style="background:#2A5A8A;border:1px solid #ddd;"></div>
+          </div>
+          <p class="product-name">Bikini Coco</p>
+          <p class="product-price">$38.900 CLP</p>
+        </div>
+        <div class="product-card" onclick="showPage('producto')">
+          <div class="product-img">
+            <div class="product-overlay"><span>Ver producto</span></div>
+            <!-- <img src="fotos/rio-chocolate.jpg" alt="Bikini Río Chocolate"> -->
+            <div class="img-label"><div class="ph-circle" style="width:36px;height:36px;background:#3D1F1F;border:none;"></div><p>Bikini Río<br>Chocolate</p></div>
+          </div>
+          <div class="product-color">
+            <div class="color-dot" style="background:#3D1F1F;border:1px solid #ddd;"></div>
+            <div class="color-dot" style="background:#6B2737;border:1px solid #ddd;"></div>
+          </div>
+          <p class="product-name">Bikini Río</p>
+          <p class="product-price">$36.900 CLP</p>
+        </div>
+        <div class="product-card" onclick="showPage('producto')">
+          <div class="product-img">
+            <div class="product-overlay"><span>Ver producto</span></div>
+            <!-- <img src="fotos/areia-azul.jpg" alt="Bikini Areia Azul"> -->
+            <div class="img-label"><div class="ph-circle" style="width:36px;height:36px;background:#2A5A8A;border:none;"></div><p>Bikini Areia<br>Azul Mare</p></div>
+          </div>
+          <div class="product-color">
+            <div class="color-dot" style="background:#2A5A8A;border:1px solid #ddd;"></div>
+            <div class="color-dot" style="background:#6B2737;border:1px solid #ddd;"></div>
+          </div>
+          <p class="product-name">Bikini Areia</p>
+          <p class="product-price">$36.900 CLP</p>
+        </div>
+        <div class="product-card" onclick="showPage('producto')">
+          <div class="product-img">
+            <div class="product-overlay"><span>Ver producto</span></div>
+            <!-- <img src="fotos/sunset-arena.jpg" alt="Entero Sunset Arena"> -->
+            <div class="img-label"><div class="ph-circle" style="width:36px;height:36px;background:#C4A882;border:none;"></div><p>Entero Sunset<br>Arena</p></div>
+          </div>
+          <div class="product-color">
+            <div class="color-dot" style="background:#C4A882;border:1px solid #ddd;"></div>
+            <div class="color-dot" style="background:#3D1F1F;border:1px solid #ddd;"></div>
+          </div>
+          <p class="product-name">Entero Sunset</p>
+          <p class="product-price">$54.900 CLP</p>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:36px;">
+        <button class="btn-primary" style="background:var(--dark);color:var(--cream);" onclick="showPage('colecciones')">Ver todo</button>
+      </div>
+    </div>
+
+    <div class="section" style="background:var(--cream);">
+      <div class="section-header">
+        <p class="section-tag">Explorar</p>
+        <h2 class="section-title">Nuestras <em>colecciones</em></h2>
+      </div>
+      <div class="coll-grid">
+        <div class="coll-item tall" onclick="showPage('colecciones')">
+          <div class="coll-bg" style="background:#5A2A2A;height:100%;">
+            <!-- <img src="fotos/col-bikinis.jpg" alt="Bikinis"> -->
+            <div class="img-label"><div class="ph-circle" style="width:36px;height:36px;border-color:#8A5A5A;"></div><p style="color:#8A5A5A;">Foto editorial<br>Bikinis</p></div>
+          </div>
+          <div class="coll-label"><h3>Bikinis</h3><span>Ver colección</span></div>
+        </div>
+        <div class="coll-item" onclick="showPage('colecciones')">
+          <div class="coll-bg" style="background:#4A3030;min-height:238px;">
+            <!-- <img src="fotos/col-enteros.jpg" alt="Enteros"> -->
+            <div class="img-label"><div class="ph-circle" style="width:36px;height:36px;border-color:#8A6A5A;"></div><p style="color:#8A6A5A;">Foto editorial<br>Enteros</p></div>
+          </div>
+          <div class="coll-label"><h3>Enteros</h3><span>Ver colección</span></div>
+        </div>
+        <div class="coll-item" onclick="showPage('colecciones')">
+          <div class="coll-bg" style="background:#3D3020;min-height:238px;">
+            <!-- <img src="fotos/col-accesorios.jpg" alt="Accesorios"> -->
+            <div class="img-label"><div class="ph-circle" style="width:36px;height:36px;border-color:#8A7A5A;"></div><p style="color:#8A7A5A;">Foto editorial<br>Accesorios</p></div>
+          </div>
+          <div class="coll-label"><h3>Accesorios</h3><span>Ver colección</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" style="background:var(--white);">
+      <div class="section-header">
+        <p class="section-tag">Lo que dicen</p>
+        <h2 class="section-title">Ellas ya <em>lo viven</em></h2>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"El bikini Coco en burdeo es simplemente perfecto. La tela es increíble y el corte me queda genial."</p>
+          <p class="testi-author">— Antonia L., Santiago</p>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"Me llegó súper rápido y la calidad es otra cosa. Ya pedí el segundo color. ¡100% recomendado!"</p>
+          <p class="testi-author">— Valentina M., Viña del Mar</p>
+        </div>
+        <div class="testi-card">
+          <div class="stars">★★★★★</div>
+          <p class="testi-text">"Hermoso el diseño con los ribetes crema. Se nota que están hechos con amor y cuidado."</p>
+          <p class="testi-author">— Catalina R., Concepción</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="newsletter">
+      <h2>Sé la primera en saberlo</h2>
+      <p>Nuevas colecciones, descuentos exclusivos y novedades directo a tu correo.</p>
+      <div class="nl-form">
+        <input class="nl-input" type="email" placeholder="tu@correo.cl">
+        <button class="nl-btn">Suscribirse</button>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div style="font-size:18px;letter-spacing:3px;color:var(--cream);text-transform:uppercase;">Curtimare</div>
+          <p>Trajes de baño diseñados para mujeres que viven el verano con intensidad. Hechos en Chile con amor.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Tienda</h4>
+          <a onclick="showPage('colecciones')">Bikinis</a>
+          <a onclick="showPage('colecciones')">Enteros</a>
+          <a onclick="showPage('colecciones')">Accesorios</a>
+          <a>Outlet</a>
+        </div>
+        <div class="footer-col">
+          <h4>Ayuda</h4>
+          <a>Guía de tallas</a>
+          <a>Envíos</a>
+          <a>Cambios</a>
+          <a>Contacto</a>
+        </div>
+        <div class="footer-col">
+          <h4>Nosotros</h4>
+          <a onclick="showPage('nosotros')">Nuestra historia</a>
+          <a>Instagram</a>
+          <a>TikTok</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 Curtimare Swimwear</p>
+        <p>Tecnología de Shopify</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- ===== COLECCIONES ===== -->
+  <div class="page" id="page-colecciones">
+    <div class="coll-page">
+      <div class="coll-page-header">
+        <p class="section-tag">Temporada 2026</p>
+        <h1 style="font-size:34px;font-weight:400;">Todas las <em style="font-style:italic;color:var(--burgundy);">colecciones</em></h1>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active">Todo</button>
+        <button class="filter-btn" onclick="setFilter(this)">Bikinis</button>
+        <button class="filter-btn" onclick="setFilter(this)">Enteros</button>
+        <button class="filter-btn" onclick="setFilter(this)">Tops</button>
+        <button class="filter-btn" onclick="setFilter(this)">Calzones</button>
+        <button class="filter-btn" onclick="setFilter(this)">Accesorios</button>
+      </div>
+      <div class="coll-products-grid">
+        <div class="product-card" onclick="showPage('producto')">
+          <div class="product-img"><div class="product-overlay"><span>Ver producto</span></div><div class="img-label"><div class="ph-circle" style="width:36px;height:36px;background:#6B2737;border:none;"></div><p>Bikini Coco Burdeo</p></div></div>
+          <div class="product-color"><div class="color-dot" style="background:#6B2737;border:1px solid #ddd;"></div><div class="color-dot" style="background:#3D1F1F;border:1px solid #ddd;"></div></div>
+          <p class="product-name">Bikini Coco</p><p class="product-price">$38.900 CLP</p>
+        </div>
+        <div class="product-card" onclick="showPage('producto')">
+          <div class="product-img"><div class="product-overlay"><span>Ver producto</span></div><div class="img-label"><div class="ph-circle" style="width:36px;height:36px;background:#3D1F1F;border:none;"></div><p>Bikini Río Chocolate</p></div></div>
+          <div class="product-color"><div class="color-dot" style="background:#3D1F1F;border:1px solid #ddd;"></div></div>
+          <p class="product-name">Bikini Río</p><p class="product-price">$36.900 CLP</p>
+        </div>
+        <div class="product-card" onclick="showPage('producto')">
+          <div class="product-img"><div class="product-overlay"><span>Ver producto</span></div><div class="img-label"><div class="ph-circle" style="width:36px;height:36px;background:#2A5A8A;border:none;"></div><p>Bikini Areia Azul</p></div></div>
+          <div class="product-color"><div class="color-dot" style="background:#2A5A8A;border:1px solid #ddd;"></div><div class="color-dot" style="background:#6B2737;border:1px solid #ddd;"></div></div>
+          <p class="product-name">Bikini Areia</p><p class="product-price">$36.900 CLP</p>
+        </div>
+        <div class="product-card" onclick="showPage('producto')">
+          <div class="product-img"><div class="product-overlay"><span>Ver producto</span></div><div class="img-label"><div class="ph-circle" style="width:36px;height:36px;background:#C4A882;border:none;"></div><p>Entero Sunset Arena</p></div></div>
+          <div class="product-color"><div class="color-dot" style="background:#C4A882;border:1px solid #ddd;"></div></div>
+          <p class="product-name">Entero Sunset</p><p class="product-price">$54.900 CLP</p>
+        </div>
+        <div class="product-card" onclick="showPage('producto')">
+          <div class="product-img"><div class="product-overlay"><span>Ver producto</span></div><div class="img-label"><div class="ph-circle" style="width:36px;height:36px;background:#6B2737;border:none;"></div><p>Top Triangle Burdeo</p></div></div>
+          <div class="product-color"><div class="color-dot" style="background:#6B2737;border:1px solid #ddd;"></div><div class="color-dot" style="background:#3D1F1F;border:1px solid #ddd;"></div></div>
+          <p class="product-name">Top Triangle</p><p class="product-price">$28.900 CLP</p>
+        </div>
+        <div class="product-card" onclick="showPage('producto')">
+          <div class="product-img"><div class="product-overlay"><span>Ver producto</span></div><div class="img-label"><div class="ph-circle" style="width:36px;height:36px;background:#3D1F1F;border:none;"></div><p>Calzón Mare Chocolate</p></div></div>
+          <div class="product-color"><div class="color-dot" style="background:#3D1F1F;border:1px solid #ddd;"></div></div>
+          <p class="product-name">Calzón Mare</p><p class="product-price">$22.900 CLP</p>
+        </div>
+      </div>
+    </div>
+    <footer style="background:var(--chocolate);padding:28px 52px;text-align:center;">
+      <p style="font-family:sans-serif;font-size:12px;color:#6A5050;">© 2026 Curtimare Swimwear</p>
+    </footer>
+  </div>
+
+  <!-- ===== PRODUCTO ===== -->
+  <div class="page" id="page-producto">
+    <div class="product-page">
+      <div class="breadcrumb">
+        <span onclick="showPage('home')">Inicio</span> /
+        <span onclick="showPage('colecciones')">Bikinis</span> / Bikini Coco
+      </div>
+      <div class="prod-layout">
+        <div class="prod-imgs">
+          <div class="prod-thumbs">
+            <div class="prod-thumb active" style="background:#6B2737;"></div>
+            <div class="prod-thumb" style="background:#7A3040;"></div>
+            <div class="prod-thumb" style="background:#5A2030;"></div>
+            <div class="prod-thumb" style="background:#4A1828;"></div>
+          </div>
+          <div class="prod-main-img">
+            <!-- <img src="fotos/coco-burdeo-main.jpg" alt="Bikini Coco"> -->
+            <div class="img-label">
+              <div class="ph-circle" style="width:56px;height:56px;background:#6B2737;border:none;"></div>
+              <p style="font-family:sans-serif;font-size:11px;color:#A09080;letter-spacing:1px;text-transform:uppercase;margin-top:10px;">Foto del producto</p>
+            </div>
+          </div>
+        </div>
+        <div class="prod-info">
+          <p style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--burgundy);margin-bottom:7px;">Bikinis</p>
+          <h1>Bikini Coco</h1>
+          <p class="prod-price">$38.900 CLP</p>
+          <p class="prod-section-title">Color — <span style="color:var(--dark);font-weight:500;">Burdeo</span></p>
+          <div class="color-options">
+            <div class="color-opt selected" style="background:#6B2737;"></div>
+            <div class="color-opt" style="background:#3D1F1F;"></div>
+            <div class="color-opt" style="background:#2A5A8A;"></div>
+          </div>
+          <p class="prod-section-title">Talla</p>
+          <div class="size-options">
+            <div class="size-opt">XS</div>
+            <div class="size-opt selected">S</div>
+            <div class="size-opt">M</div>
+            <div class="size-opt">L</div>
+            <div class="size-opt">XL</div>
+          </div>
+          <button class="btn-add">Agregar al bolso</button>
+          <button class="btn-wish">Guardar en favoritos</button>
+          <div class="prod-detail">
+            <p style="font-family:sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--dark);margin-bottom:10px;">Descripción</p>
+            <p>Top estilo bandeau con ribete crema característico de Curtimare. Tela lycra de alta calidad, secado rápido y resistente al cloro.</p>
+            <br>
+            <p>· Ribete crema clásico Curtimare</p>
+            <p>· 80% Poliamida · 20% Elastano</p>
+            <p>· Guía de tallas disponible</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer style="background:var(--chocolate);padding:28px 52px;text-align:center;margin-top:56px;">
+      <p style="font-family:sans-serif;font-size:12px;color:#6A5050;">© 2026 Curtimare Swimwear</p>
+    </footer>
+  </div>
+
+  <!-- ===== NOSOTROS ===== -->
+  <div class="page" id="page-nosotros">
+    <div class="about-section">
+      <div class="about-img">
+        <!-- <img src="fotos/nosotros.jpg" alt="Curtimare"> -->
+        <div class="img-label">
+          <div class="ph-circle" style="width:56px;height:56px;border-color:#B0A090;"></div>
+          <p style="font-family:sans-serif;font-size:11px;color:#A09080;letter-spacing:1px;text-transform:uppercase;margin-top:10px;">Foto de marca</p>
+        </div>
+      </div>
+      <div>
+        <p class="about-tag">Nuestra historia</p>
+        <h2 class="about-title">Nacimos del <em>amor</em><br>por el mar.</h2>
+        <p class="about-text">Curtimare nació de un viaje a Río de Janeiro y la certeza de que un buen traje de baño puede cambiar cómo te sientes. Cada diseño lleva el sello del detalle: el ribete crema que nos identifica, las telas que abrazan y acompañan.</p>
+        <p class="about-text">Somos una marca pequeña, con mucho corazón. Cada temporada creamos colecciones limitadas para que cada pieza sea especial.</p>
+        <button class="btn-primary" style="background:var(--dark);color:var(--cream);" onclick="showPage('colecciones')">Ver colección</button>
+      </div>
+    </div>
+    <div class="section" style="background:var(--white);">
+      <div class="section-header">
+        <p class="section-tag">Nuestros valores</p>
+        <h2 class="section-title">Lo que nos <em>define</em></h2>
+      </div>
+      <div class="valores-grid">
+        <div class="valor-item">
+          <div class="valor-circle"></div>
+          <h3 style="font-size:16px;font-weight:400;margin-bottom:9px;">Calidad real</h3>
+          <p style="font-family:sans-serif;font-size:13px;color:var(--mid);line-height:1.8;">Telas de primera, costuras pensadas para durar toda la temporada y mucho más.</p>
+        </div>
+        <div class="valor-item">
+          <div class="valor-circle"></div>
+          <h3 style="font-size:16px;font-weight:400;margin-bottom:9px;">Diseño con identidad</h3>
+          <p style="font-family:sans-serif;font-size:13px;color:var(--mid);line-height:1.8;">El ribete crema es nuestra firma. Reconocible, elegante, único.</p>
+        </div>
+        <div class="valor-item">
+          <div class="valor-circle"></div>
+          <h3 style="font-size:16px;font-weight:400;margin-bottom:9px;">Hecho con amor</h3>
+          <p style="font-family:sans-serif;font-size:13px;color:var(--mid);line-height:1.8;">Colecciones limitadas, producción local, atención personalizada.</p>
+        </div>
+      </div>
+    </div>
+    <footer style="background:var(--chocolate);padding:28px 52px;text-align:center;">
+      <p style="font-family:sans-serif;font-size:12px;color:#6A5050;">© 2026 Curtimare Swimwear</p>
+    </footer>
+  </div>
+
+  <script>
+    function showPage(name) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-links span').forEach(s => s.classList.remove('current'));
+      document.getElementById('page-' + name).classList.add('active');
+      var nav = document.getElementById('nav-' + name);
+      if (nav) nav.classList.add('current');
+      window.scrollTo(0, 0);
+    }
+    function setFilter(el) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      el.classList.add('active');
+    }
+    document.querySelectorAll('.size-opt').forEach(function(el) {
+      el.onclick = function() {
+        el.closest('.size-options').querySelectorAll('.size-opt').forEach(s => s.classList.remove('selected'));
+        el.classList.add('selected');
+      };
+    });
+    document.querySelectorAll('.color-opt').forEach(function(el) {
+      el.onclick = function() {
+        el.closest('.color-options').querySelectorAll('.color-opt').forEach(c => c.classList.remove('selected'));
+        el.classList.add('selected');
+      };
+    });
+    document.querySelectorAll('.prod-thumb').forEach(function(el) {
+      el.onclick = function() {
+        el.closest('.prod-thumbs').querySelectorAll('.prod-thumb').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+      };
+    });
+  </script>
+</body>
+</html>
